@@ -141,8 +141,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release download "${{ github.ref_name }}" -p  '*${{ runner.os }}.zip' --repo="$GITHUB_REPOSITORY" > haskell-github-release-test.zip
-          7z e haskell-github-release-test.zip
+          gh release download "${{ github.ref_name }}" --pattern '*${{ runner.os }}.zip' --repo="$GITHUB_REPOSITORY" --output artifact.zip
+          7z e artifact.zip
 
       - name: smoke test
         run: |
