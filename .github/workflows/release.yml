@@ -112,6 +112,5 @@ jobs:
         id: upload-release-asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref_name }}
         run: |
-          gh release upload "$tag" "${{ env.ZIP_PATH }}" --repo="$GITHUB_REPOSITORY"
+          gh release upload "${{ github.ref_name }}" "${{ env.ZIP_PATH }}" --repo="$GITHUB_REPOSITORY"
