@@ -91,12 +91,12 @@ jobs:
       - if: matrix.os == 'windows-latest'
         name: Set zip file path name on Windows
         run: |
-          echo "ZIP_PATH=./bin/haskell-github-release-test.zip" >> $env:GITHUB_ENV
+          echo "ZIP_PATH=./bin/haskell-github-release-test-${{ steps.tag.outputs.tag }}-${{ runner.os }}.zip" >> $env:GITHUB_ENV
 
       - if: matrix.os != 'windows-latest'
         name: Set zip file path name not on Windows
         run: |
-          echo "ZIP_PATH=./bin/haskell-github-release-test.zip" >> "$GITHUB_ENV"
+          echo "ZIP_PATH=./bin/haskell-github-release-test-${{ steps.tag.outputs.tag }}-${{ runner.os }}.zip" >> "$GITHUB_ENV"
 
       - if: matrix.os != 'windows-latest'
         name: Create zip file not on windows
@@ -113,7 +113,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
-          asset_name: gitlab-helper-${{ steps.tag.outputs.tag }}-${{ runner.os }}.zip
         run: |
-          mv ${{ env.ZIP_PATH }} $asset_name
-          gh release upload "$tag" "$asset_name"
+          gh release upload "$tag" "${{ env.ZIP_PATH }}"
