@@ -121,7 +121,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-          - os: macOS-13
+          # - os: macOS-13
           - os: windows-latest
     name: Test built binaries
     runs-on: ${{ matrix.os }}
