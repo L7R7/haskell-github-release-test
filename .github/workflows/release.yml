@@ -136,10 +136,12 @@ jobs:
         with:
           tagRegex: "v(.*)"
           tagRegexGroup: 1
+
       - name: download and extract executable
         run: |
-          curl -sL https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/haskell-github-release-test-${{ steps.tag.outputs.tag }}-${{ runner.os }}.zip > haskell-github-release-test.zip
+          gh release download "${{ github.ref_name }}" -p  '*${{ runner.os }}.zip' --repo="$GITHUB_REPOSITORY" > haskell-github-release-test.zip
           7z e haskell-github-release-test.zip
+
       - name: smoke test
         run: |
           ./haskell-github-release-test
