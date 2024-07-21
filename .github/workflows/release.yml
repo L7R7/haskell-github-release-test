@@ -121,16 +121,14 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            arch: x86_64
           - os: macOS-13
-            arch: aarch64
           - os: windows-latest
-            arch: x86_64
     name: Test built binaries
     runs-on: ${{ matrix.os }}
     needs: build_artifact
     steps:
-      - if: matrix.os == 'windows-latest'
+      - # Apparently, gh requires to live in a git repo in order to work on windows
+        if: matrix.os == 'windows-latest'
         name: Check out code
         uses: actions/checkout@v4
 
