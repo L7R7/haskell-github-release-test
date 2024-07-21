@@ -113,7 +113,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
-          asset_name: haskell-github-release-test-${{ steps.tag.outputs.tag }}-${{ runner.os }}.zip
         run: |
-          gh release upload "$tag" "$asset_name" \
+          gh release upload "$tag" "${{ env.ZIP_PATH }}" \
             --repo="$GITHUB_REPOSITORY"
