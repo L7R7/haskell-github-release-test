@@ -20,7 +20,6 @@ jobs:
           tag: ${{ github.ref_name }}
         run: |
           gh release create "$tag" \
-            --repo="$GITHUB_REPOSITORY" \
             --title="$tag" \
             --generate-notes \
             --draft
@@ -116,5 +115,4 @@ jobs:
           asset_name: gitlab-helper-${{ steps.tag.outputs.tag }}-${{ runner.os }}.zip
         run: |
           mv ${{ env.ZIP_PATH }} $asset_name
-          gh release upload "$tag" "$asset_name" \
-            --repo="$GITHUB_REPOSITORY"
+          gh release upload "$tag" "$asset_name"
