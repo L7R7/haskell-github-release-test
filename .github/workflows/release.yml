@@ -114,4 +114,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
         run: |
-          gh release upload "$tag" "${{ env.ZIP_PATH }}"
+          gh release upload "$tag" "${{ env.ZIP_PATH }}" --repo="$GITHUB_REPOSITORY"
