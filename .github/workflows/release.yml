@@ -138,6 +138,8 @@ jobs:
           tagRegexGroup: 1
 
       - name: download and extract executable
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release download "${{ github.ref_name }}" -p  '*${{ runner.os }}.zip' --repo="$GITHUB_REPOSITORY" > haskell-github-release-test.zip
           7z e haskell-github-release-test.zip
