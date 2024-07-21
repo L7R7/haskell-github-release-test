@@ -62,7 +62,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.stack
-          key: ${{ runner.os }}-9.6.5-${{ matrix.arch }}-${{ hashFiles('**/stack.yaml.lock','**/gitlab-helper.cabal') }}-v2
+          key: ${{ runner.os }}-9.6.5-${{ matrix.arch }}-${{ hashFiles('**/stack.yaml.lock','**/haskell-github-release-test.cabal') }}-v2
           restore-keys: |
             ${{ runner.os }}-${{ matrix.arch }}-9.6.5-
 
@@ -74,14 +74,14 @@ jobs:
       - if: matrix.os == 'windows-latest'
         name: Set binary path name on Windows
         run: |
-          mv ./bin/gitlab-helper-exe.exe ./bin/gitlab-helper.exe
-          echo "BINARY_PATH=./bin/gitlab-helper.exe" >> $env:GITHUB_ENV
+          mv ./bin/haskell-github-release-test-exe.exe ./bin/haskell-github-release-test.exe
+          echo "BINARY_PATH=./bin/haskell-github-release-test.exe" >> $env:GITHUB_ENV
 
       - if: matrix.os != 'windows-latest'
         name: Set binary path name not on Windows
         run: |
-          mv ./bin/gitlab-helper-exe ./bin/gitlab-helper
-          echo "BINARY_PATH=./bin/gitlab-helper" >> "$GITHUB_ENV"
+          mv ./bin/haskell-github-release-test-exe ./bin/haskell-github-release-test
+          echo "BINARY_PATH=./bin/haskell-github-release-test" >> "$GITHUB_ENV"
 
       - name: Compress binary
         uses: svenstaro/upx-action@2.4.1
@@ -91,12 +91,12 @@ jobs:
       - if: matrix.os == 'windows-latest'
         name: Set zip file path name on Windows
         run: |
-          echo "ZIP_PATH=./bin/gitlab-helper.zip" >> $env:GITHUB_ENV
+          echo "ZIP_PATH=./bin/haskell-github-release-test.zip" >> $env:GITHUB_ENV
 
       - if: matrix.os != 'windows-latest'
         name: Set zip file path name not on Windows
         run: |
-          echo "ZIP_PATH=./bin/gitlab-helper.zip" >> "$GITHUB_ENV"
+          echo "ZIP_PATH=./bin/haskell-github-release-test.zip" >> "$GITHUB_ENV"
 
       - if: matrix.os != 'windows-latest'
         name: Create zip file not on windows
@@ -113,7 +113,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
-          asset_name: gitlab-helper-${{ steps.tag.outputs.tag }}-${{ runner.os }}.zip
+          asset_name: haskell-github-release-test-${{ steps.tag.outputs.tag }}-${{ runner.os }}.zip
         run: |
           gh release upload "$tag" "$asset_name" \
             --repo="$GITHUB_REPOSITORY"
