@@ -83,7 +83,8 @@ jobs:
           mv ./bin/haskell-github-release-test-exe ./bin/haskell-github-release-test
           echo "BINARY_PATH=./bin/haskell-github-release-test" >> "$GITHUB_ENV"
 
-      - name: Compress binary
+      - if: matrix.os != 'macOS-latest'
+        name: Compress binary
         uses: svenstaro/upx-action@2.4.1
         with:
           files: ${{ env.BINARY_PATH }}
