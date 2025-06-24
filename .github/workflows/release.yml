@@ -35,7 +35,7 @@ jobs:
         include:
           - os: ubuntu-latest
             arch: x86_64
-          - os: macOS-13
+          - os: macOS-latest
             arch: aarch64
           - os: windows-latest
             arch: x86_64
