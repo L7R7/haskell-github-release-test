@@ -37,6 +37,8 @@ jobs:
             arch: x86_64
           - os: macOS-latest
             arch: aarch64
+          - os: macos-13
+            arch: x86_64
           - os: windows-latest
             arch: x86_64
 
@@ -83,7 +85,7 @@ jobs:
           mv ./bin/haskell-github-release-test-exe ./bin/haskell-github-release-test
           echo "BINARY_PATH=./bin/haskell-github-release-test" >> "$GITHUB_ENV"
 
-      - if: matrix.os != 'macOS-latest'
+      - if: runner.os != 'macOS'
         name: Compress binary
         uses: svenstaro/upx-action@3.0.0
         with:
@@ -92,12 +94,12 @@ jobs:
       - if: matrix.os == 'windows-latest'
         name: Set zip file path name on Windows
         run: |
-          echo "ZIP_PATH=./bin/haskell-github-release-test-${{ steps.tag.outputs.tag }}-${{ runner.os }}.zip" >> $env:GITHUB_ENV
+          echo "ZIP_PATH=./bin/haskell-github-release-test-${{ steps.tag.outputs.tag }}-${{ runner.os }}-${{ matrix.arch }}.zip" >> $env:GITHUB_ENV
 
       - if: matrix.os != 'windows-latest'
         name: Set zip file path name not on Windows
         run: |
-          echo "ZIP_PATH=./bin/haskell-github-release-test-${{ steps.tag.outputs.tag }}-${{ runner.os }}.zip" >> "$GITHUB_ENV"
+          echo "ZIP_PATH=./bin/haskell-github-release-test-${{ steps.tag.outputs.tag }}-${{ runner.os }}-${{ matrix.arch }}.zip" >> "$GITHUB_ENV"
 
       - if: matrix.os != 'windows-latest'
         name: Create zip file not on windows
@@ -114,7 +116,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "${{ github.ref_name }}" "${{ env.ZIP_PATH }}#${{ runner.os }}.zip" --repo="$GITHUB_REPOSITORY"
+          gh release upload "${{ github.ref_name }}" "${{ env.ZIP_PATH }}#haskell-github-release-test-${{ steps.tag.outputs.tag }}-${{ runner.os }}-${{ matrix.arch }}.zip" --repo="$GITHUB_REPOSITORY"
 
   test:
     strategy:
@@ -122,8 +124,13 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-          # - os: macOS-13
+            arch: x86_64
+          - os: macOS-latest
+            arch: aarch64
+          - os: macos-13
+            arch: x86_64
           - os: windows-latest
+            arch: x86_64
     name: Test built binaries
     runs-on: ${{ matrix.os }}
     needs: build_artifact
@@ -144,9 +151,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release download "${{ github.ref_name }}" --pattern '*${{ runner.os }}.zip' --repo="$GITHUB_REPOSITORY" --output artifact.zip
+          gh release download "${{ github.ref_name }}" --pattern '*${{ runner.os }}-${{ matrix.arch }}.zip' --repo="$GITHUB_REPOSITORY" --output artifact.zip
           7z e artifact.zip
 
-      - name: smoke test
+      - if: runner.os != 'Linux'
+        name: smoke test
         run: |
           ./haskell-github-release-test
+
+      - if: runner.os == 'macOS'
+        name: Check macOS dylib dependencies are system-only
+        run: |
+          otool -L ./haskell-github-release-test | tail -n +2 | awk '{print $1}' | \
+            grep -vE '^(/usr/lib/|/System/)' && { echo "non-system dylib"; exit 1; } || true
+
+      - if: runner.os == 'Linux'
+        name: Standalone test (Linux, minimal container)
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work ubuntu:24.04 \
+            ./haskell-github-release-test
