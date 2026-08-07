@@ -54,7 +54,7 @@ jobs:
           tagRegexGroup: 1
 
       - name: Setup Haskell
-        uses: haskell-actions/setup@v2.11.0
+        uses: haskell-actions/setup@v2.12.0
         with:
           ghc-version: 9.10.3
           enable-stack: true
